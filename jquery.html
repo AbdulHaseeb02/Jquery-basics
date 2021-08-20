@@ -1,0 +1,141 @@
+<html>
+    <head>
+        <title>
+            Jquery Practice
+        </title>
+
+        <style>
+            table,tr{
+            border: 1px solid black;
+            border-collapse: collapse;
+            }
+            th{ 
+                white-space: nowrap; 
+                border: 1px solid black;
+            border-collapse: collapse;
+            }
+            .td-class{
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+            .display-subject{
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+            .delete-icon, .edit-icon, .confirm-icon, .discard-icon{
+                cursor: pointer
+            }
+            .display-none{
+                display: none !important;
+            }
+        </style>
+
+        <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/sweetalert2@10.10.1/dist/sweetalert2.min.css'>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+    </head>
+
+    <body>
+        <div class ="student">
+
+            <form method ="POST" action = "" class= "std" style="text-align: center; margin-top: 2%;">
+                <label>Name</label>
+                <input type="text" id="name" name="name" required><br>
+                
+                <h2>Marks gained:</h2>
+                <label>Subject 1</label>
+                <input type="number" id="sub1" name="sub1" required><br>
+                <label>Subject 2</label>
+                <input type="number" id="sub2" name="sub2" required><br>
+                <label>Subject 3</label>
+                <input type="number" id="sub3" name="sub3" required><br>
+                <label>Subject 4</label>
+                <input type="number" id="sub4" name="sub4" required><br>
+                <label>Subject 5</label>
+                <input type="number" id="sub5" name="sub5" required><br>
+                
+                <input type="submit" value="Submit" id="subm" style="margin-top: auto;">
+              </form>     
+        </div>
+        
+        <div class = "Output display-none">
+            <table id = "output-table" class="cell-border">
+                <thead>
+                    <tr>
+                        <th>Name </th>
+                        <th>Subject 1</th>
+                        <th>Subject 2</th>
+                        <th>Subject 3</th>
+                        <th>Subject 4</th>
+                        <th>Subject 5</th>
+                        <th>Obtained</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="6" style="text-align:right">Total:</th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table> 
+        </div>
+        <div class="result">
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.10.1/dist/sweetalert2.all.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+
+        <script>
+            var table = $("#output-table").DataTable({
+                            "footerCallback": function ( row, data, start, end, display ) {
+                                var api = this.api(), data;
+                    
+                                // Remove the formatting to get integer data for summation
+                                var intVal = function ( i ) {
+                                    return typeof i === 'string' ?
+                                        i.replace(/[\$,]/g, '')*1 :
+                                        typeof i === 'number' ?
+                                            i : 0;
+                                }; 
+                                // Total over this page
+                                var pageTotal = api
+                                    .column( 6, { page: 'current'} )
+                                    .data()
+                                    .reduce( function (a, b) {
+                                        return intVal(a) + intVal(b);
+                                    }, 0 ); 
+                                // Update footer
+                                $( api.column( 6 ).footer() ).html(
+                                    pageTotal 
+                                );
+                            }
+                        } 
+
+            );
+            var rows=0;
+            $("form").submit(function(event){
+                $(".output").removeClass('display-none');
+                event.preventDefault();
+                    rows++;
+                    table.row.add([
+                    $("#name").val(),
+                    $("#sub1").val(),
+                    $("#sub2").val(),
+                    $("#sub3").val(),
+                    $("#sub4").val(),
+                    $("#sub5").val(),
+                    parseInt($("#sub1").val()) + parseInt($("#sub2").val()) + parseInt($("#sub3").val()) + parseInt($("#sub4").val()) + parseInt($("#sub5").val()),
+                    500
+                    ]).node().id = `display-row-${rows}`;
+                    table.draw(false);
+
+                    $("form").trigger("reset");  
+            });
+        </script>
+    </body>
+</html>
